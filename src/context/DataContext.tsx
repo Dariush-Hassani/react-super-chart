@@ -37,9 +37,9 @@ function dataReducer(state: DataContextType, action: DataActionType) {
       let newInitData = action.initData;
 
       let initDates = newInitData.map((x) => x.date);
-      let normalizeInitDates = (dateArrayNormalizer(initDates) ?? []).sort(
-        (a, b) => a - b
-      );
+      let normalizeInitDates = (
+        dateArrayNormalizer(initDates) as number[]
+      ).sort((a, b) => a - b);
       newInitData.forEach((x, i) => (x.date = normalizeInitDates[i]));
 
       let slPrices: number[] = newInitData

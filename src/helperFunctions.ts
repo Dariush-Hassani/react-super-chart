@@ -39,6 +39,8 @@ export const dataNormalizer = (data: any[]): DataType[] => {
           typeof x.position.sl !== 'number' ||
           typeof x.position.tp !== 'number' ||
           typeof x.position.positionType !== 'string' ||
+          (x.position.positionType !== 'long' &&
+            x.position.positionType !== 'short') ||
           typeof x.position.positionValue !== 'number')
       ) {
         throw new Error('Data not suite for this chart!');
