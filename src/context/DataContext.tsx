@@ -35,7 +35,6 @@ function dataReducer(state: DataContextType, action: DataActionType) {
   switch (action.type) {
     case 'changeInitData': {
       let newInitData = action.initData;
-      let newShownData = action.initData;
 
       let initDates = newInitData.map((x) => x.date);
       let normalizeInitDates = (dateArrayNormalizer(initDates) ?? []).sort(
@@ -43,48 +42,91 @@ function dataReducer(state: DataContextType, action: DataActionType) {
       );
       newInitData.forEach((x, i) => (x.date = normalizeInitDates[i]));
 
+      let slPrices: number[] = newInitData
+        .filter((x) => x.position && typeof x.position?.sl !== undefined)
+        .map((x) => x.position?.sl as number);
+
+      let tpPrices: number[] = newInitData
+        .filter((x) => x.position && typeof x.position?.tp !== undefined)
+        .map((x) => x.position?.tp as number);
+
+      let highPrices: number[] = newInitData.map((x) => x.high as number);
+      let lowPrices: number[] = newInitData.map((x) => x.low as number);
+
       let newMinMaxInitPrice = d3.extent([
-        ...newInitData.map((x) => x.high),
-        ...newInitData.map((x) => x.low),
-        ...newInitData.map((x) => {
-          return x.position?.sl || 0;
-        }),
-        ...newInitData.map((x) => {
-          return x.position?.tp || 0;
-        }),
+        ...highPrices,
+        ...lowPrices,
+        ...slPrices,
+        ...tpPrices,
       ]);
-      let newMinMaxShownPrice = newMinMaxInitPrice;
 
       let lastIndex = normalizeInitDates.length - 1;
 
       let newState: DataContextType = {
         initData: newInitData,
-        shownData: newShownData,
+        shownData: newInitData,
         minMaxInitDate: {
-          min: normalizeInitDates[0] ?? 0,
-          max: normalizeInitDates[lastIndex] ?? 0,
+          min: normalizeInitDates[0] as number,
+          max: normalizeInitDates[lastIndex] as number,
         },
         minMaxShownDate: {
-          min: normalizeInitDates[0] ?? 0,
-          max: normalizeInitDates[lastIndex] ?? 0,
+          min: normalizeInitDates[0] as number,
+          max: normalizeInitDates[lastIndex] as number,
         },
         shownRange: {
-          start: normalizeInitDates[0] ?? 0,
-          end: normalizeInitDates[lastIndex] ?? 0,
+          start: normalizeInitDates[0] as number,
+          end: normalizeInitDates[lastIndex] as number,
         },
         minMaxInitPrice: {
-          min: newMinMaxInitPrice[0] ?? 0,
-          max: newMinMaxInitPrice[1] ?? 0,
+          min: newMinMaxInitPrice[0] as number,
+          max: newMinMaxInitPrice[1] as number,
         },
         minMaxShownPrice: {
-          min: newMinMaxShownPrice[0] ?? 0,
-          max: newMinMaxShownPrice[1] ?? 0,
+          min: newMinMaxInitPrice[0] as number,
+          max: newMinMaxInitPrice[1] as number,
         },
       };
       return newState;
     }
+    case 'changeShownRange': {
+      let newShownData = state.initData.filter(
+        (x) =>
+          x.date < action.shownRange.end && x.date > action.shownRange.start
+      );
+      let shownDates = newShownData.map((x) => x.date);
+
+      let slPrices: number[] = newShownData
+        .filter((x) => x.position && typeof x.position?.sl !== undefined)
+        .map((x) => x.position?.sl as number);
+
+      let tpPrices: number[] = newShownData
+        .filter((x) => x.position && typeof x.position?.tp !== undefined)
+        .map((x) => x.position?.tp as number);
+
+      let highPrices: number[] = newShownData.map((x) => x.high as number);
+      let lowPrices: number[] = newShownData.map((x) => x.low as number);
+
+      let newMinMaxShownPrice = d3.extent([
+        ...highPrices,
+        ...lowPrices,
+        ...slPrices,
+        ...tpPrices,
+      ]);
+
+      let newState = { ...state };
+      newState.shownData = newShownData;
+      newState.minMaxShownDate = {
+        min: shownDates[0],
+        max: shownDates[newShownData.length - 1],
+      };
+      newState.minMaxShownPrice = {
+        min: newMinMaxShownPrice[0] as number,
+        max: newMinMaxShownPrice[1] as number,
+      };
+      return newState;
+    }
     default: {
-      throw Error('Unknown action: ' + action.type);
+      return state;
     }
   }
 }

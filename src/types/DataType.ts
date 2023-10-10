@@ -1,5 +1,5 @@
 type DataType = {
-  date: string | number;
+  date: number;
   open: number;
   close: number;
   high: number;
