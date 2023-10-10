@@ -1,9 +1,14 @@
-import React from 'react'
+import { DataProvider } from '../context/DataContext';
 
-const CandlestickChart = () => {
+import Chart from './Chart';
+
+const CandlestickChart: React.FC<{
+  chartData: any;
+}> = ({ chartData }) => {
   return (
-    <div>CandlestickChart</div>
-  )
-}
-
-export default CandlestickChart
+    <DataProvider>
+      <Chart chartData={chartData}/>
+    </DataProvider>
+  );
+};
+export default CandlestickChart;
