@@ -1,8 +1,6 @@
 import DataType from './types/DataType';
 
-export const dateArrayNormalizer = (
-  data: (string | number)[]
-): number[] | undefined => {
+export const dateArrayNormalizer = (data: (string | number)[]): number[] => {
   try {
     if (data.length === 0) return [];
     let rv: number[] = [];
