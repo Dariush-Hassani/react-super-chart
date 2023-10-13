@@ -4,11 +4,13 @@ import {
   ConfigDataContextType,
 } from '../types/ConfigDataContextType';
 
-const ConfigDataContext = createContext<ConfigDataContextType>({
+const initData = {
   decimal: 0,
   height: 0,
   width: 0,
-});
+  characterFontWidth: 0,
+};
+const ConfigDataContext = createContext<ConfigDataContextType>(initData);
 const ConfigDispatchContext = createContext<Dispatch<ConfigDataActionType>>(
   () => {}
 );
@@ -17,13 +19,16 @@ function dataReducer(
   state: ConfigDataContextType,
   action: ConfigDataActionType
 ) {
-  if (action.type === 'changeDiagramDimension') {
+  if (action.type === 'changeContainerDimension') {
+    let newState = state;
+    state.width = action.containerWidth;
+    state.height = action.containerHeight;
+    return newState;
+  } else if (action.type === 'changeDiagramDimension') {
     let newState = state;
     state.diagramHeight = action.diagramHeight;
     state.diagramWidth = action.diagramWidth;
-    return {
-      ...newState,
-    };
+    return newState;
   } else {
     return state;
   }
@@ -31,12 +36,11 @@ function dataReducer(
 
 export const ConfigDataProvider: React.FC<{
   children: React.ReactNode;
-  configData: ConfigDataContextType;
-}> = ({ children, configData }) => {
-  const [data, dispatch] = useReducer(dataReducer, configData);
+}> = ({ children }) => {
+  const [data, dispatch] = useReducer(dataReducer, initData);
 
   return (
-    <ConfigDataContext.Provider value={configData}>
+    <ConfigDataContext.Provider value={data}>
       <ConfigDispatchContext.Provider value={dispatch}>
         {children}
       </ConfigDispatchContext.Provider>
@@ -47,7 +51,6 @@ export const ConfigDataProvider: React.FC<{
 export function useConfigData() {
   return useContext(ConfigDataContext);
 }
-
 
 export function useConfigDispatch() {
   return useContext(ConfigDispatchContext);

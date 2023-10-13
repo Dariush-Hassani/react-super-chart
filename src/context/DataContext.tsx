@@ -172,7 +172,6 @@ export const DataProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
   const [data, dispatch] = useReducer(dataReducer, initData);
-
   return (
     <DataContext.Provider value={data}>
       <DataDispatchContext.Provider value={dispatch}>

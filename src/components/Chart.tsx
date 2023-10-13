@@ -3,12 +3,18 @@ import { useData, useDataDispatch } from '../context/DataContext';
 import { useEffect } from 'react';
 import { dataNormalizer } from '../helperFunctions';
 import Layout from './Layout';
-import { useConfigData, useConfigDispatch } from '../context/ConfigtDataContext';
+import {
+  useConfigData,
+  useConfigDispatch,
+} from '../context/ConfigtDataContext';
 
 const Chart: React.FC<{
   chartData: any;
   chartId: string;
-}> = ({ chartData, chartId }) => {
+  width: number;
+  height: number;
+  decimal?: number;
+}> = ({ chartData, chartId, width, height, decimal }) => {
   const data = useData();
   const dispatchData = useDataDispatch();
 
@@ -16,6 +22,21 @@ const Chart: React.FC<{
   const dispatchConfig = useConfigDispatch();
 
   const randomExtId = Math.random().toString();
+
+  useEffect(() => {
+    dispatchConfig({
+      type: 'changeContainerDimension',
+      containerWidth: width,
+      containerHeight: height,
+    });
+  }, [width, height]);
+
+  useEffect(() => {
+    dispatchConfig({
+      type: 'changeDecimal',
+      decimal: decimal ?? 2,
+    });
+  }, [decimal]);
 
   useEffect(() => {
     if (chartData) {
@@ -28,9 +49,6 @@ const Chart: React.FC<{
     }
   }, [chartData]);
 
-  useEffect(() => {
-    console.log(config);
-  }, [config]);
 
   return <Layout chartId={chartId} randomExtId={randomExtId}></Layout>;
 };

@@ -12,14 +12,14 @@ const CandlestickChart: React.FC<{
 }> = ({ chartData, chartId, width, height, decimal }) => {
   return (
     <DataProvider>
-      <ConfigDataProvider
-        configData={{
-          width: width,
-          height: height,
-          decimal: decimal ?? 2,
-        }}
-      >
-        <Chart chartData={chartData} chartId={chartId} />
+      <ConfigDataProvider>
+        <Chart
+          chartData={chartData}
+          chartId={chartId}
+          width={width}
+          height={height}
+          decimal={decimal}
+        />
       </ConfigDataProvider>
     </DataProvider>
   );
