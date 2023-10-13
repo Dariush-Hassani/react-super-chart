@@ -5,7 +5,8 @@ import { dataNormalizer } from '../helperFunctions';
 
 const Chart: React.FC<{
   chartData: any;
-}> = ({ chartData }) => {
+  chartId: string;
+}> = ({ chartData, chartId }) => {
   const data = useData();
   const dispatchData = useDataDispatch();
 
@@ -18,16 +19,6 @@ const Chart: React.FC<{
           initData: newData,
         });
     }
-
-    setTimeout(() => {
-      dispatchData({
-        type: 'changeShownRange',
-        shownRange: {
-          start: 1540166400000,
-          end: 1540512000000,
-        },
-      });
-    }, 5000);
   }, [chartData]);
 
   useEffect(() => {

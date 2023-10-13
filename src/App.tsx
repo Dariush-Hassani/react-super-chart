@@ -10,7 +10,11 @@ function App() {
     });
   }, []);
 
-  return <CandlestickChart chartData={data} />;
+  return (
+    <>
+      <CandlestickChart chartData={data} chartId='1' />
+    </>
+  );
 }
 
 export default App;

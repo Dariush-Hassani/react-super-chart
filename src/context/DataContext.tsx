@@ -42,6 +42,8 @@ const DataDispatchContext = createContext<Dispatch<DataActionType>>(() => {});
 function dataReducer(state: DataContextType, action: DataActionType) {
   switch (action.type) {
     case 'changeInitData': {
+      if(action.initData.length === 0) return state;
+      
       let newInitData = action.initData;
 
       let initDates = newInitData.map((x) => x.date);

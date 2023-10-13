@@ -4,10 +4,11 @@ import Chart from './Chart';
 
 const CandlestickChart: React.FC<{
   chartData: any;
-}> = ({ chartData }) => {
+  chartId: string;
+}> = ({ chartData, chartId }) => {
   return (
     <DataProvider>
-      <Chart chartData={chartData}/>
+      <Chart chartData={chartData} chartId={chartId} />
     </DataProvider>
   );
 };
