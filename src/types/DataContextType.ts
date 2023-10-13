@@ -23,6 +23,11 @@ export type DataContextType = {
     min: number;
     max: number;
   };
+  zoomFactor: number;
+  increamentZoomFactor: number;
+  decreamentZoomFactor: number;
+  candleWidthDate: number;
+  candleLockerWidthDate: number;
 };
 
 export type DataActionType =

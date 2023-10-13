@@ -64,3 +64,20 @@ export const dataNormalizer = (data: any[]): DataType[] => {
     throw new Error('Data not suite for this chart!');
   }
 };
+
+export const calculateCandleWidthDate = (
+  data: DataType[]
+): [candleWidth: number, candleLockerWidth: number] => {
+  let times = data.map((x) => x.date);
+  let indexes = [0, 1];
+  let min = times[1] - times[0];
+  for (let i = 1; i < times.length; i++) {
+    if (times[i + 1] - times[i] < min) {
+      min = times[i + 1] - times[i];
+      indexes = [i, i + 1];
+    }
+  }
+
+  let width = times[indexes[1]] - times[indexes[0]];
+  return [width - 0.3 * width, width];
+};

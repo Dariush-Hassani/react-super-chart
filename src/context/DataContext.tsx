@@ -1,6 +1,9 @@
 import { createContext, useReducer, Dispatch, useContext } from 'react';
 import { DataActionType, DataContextType } from '../types/DataContextType';
-import { dateArrayNormalizer } from '../helperFunctions';
+import {
+  calculateCandleWidthDate,
+  dateArrayNormalizer,
+} from '../helperFunctions';
 import * as d3 from 'd3';
 
 const initData: DataContextType = {
@@ -26,6 +29,11 @@ const initData: DataContextType = {
     min: 0,
     max: 0,
   },
+  zoomFactor: 1,
+  increamentZoomFactor: 1.2,
+  decreamentZoomFactor: 1.2,
+  candleWidthDate: 0,
+  candleLockerWidthDate: 0,
 };
 
 const DataContext = createContext<DataContextType>(initData);
@@ -62,6 +70,9 @@ function dataReducer(state: DataContextType, action: DataActionType) {
 
       let lastIndex = normalizeInitDates.length - 1;
 
+      let [candleWidth, candleLockerWidth] =
+        calculateCandleWidthDate(newInitData);
+
       let newState: DataContextType = {
         initData: newInitData,
         shownData: newInitData,
@@ -85,13 +96,30 @@ function dataReducer(state: DataContextType, action: DataActionType) {
           min: newMinMaxInitPrice[0] as number,
           max: newMinMaxInitPrice[1] as number,
         },
+        zoomFactor: state.zoomFactor,
+        increamentZoomFactor: state.increamentZoomFactor,
+        decreamentZoomFactor: state.decreamentZoomFactor,
+        candleWidthDate: candleWidth,
+        candleLockerWidthDate: candleLockerWidth,
       };
       return newState;
     }
     case 'changeShownRange': {
+      let oldCandleWidthDate = state.candleWidthDate;
+
+      let newShownRange = {
+        start: action.shownRange.start,
+        end: action.shownRange.end,
+      };
+
+      let newZoomFactor : number =
+        (state.minMaxInitDate.max - state.minMaxInitDate.min) /
+        (newShownRange.end - newShownRange.start);
+
       let newShownData = state.initData.filter(
         (x) =>
-          x.date < action.shownRange.end && x.date > action.shownRange.start
+          x.date < action.shownRange.end - oldCandleWidthDate &&
+          x.date > action.shownRange.start + oldCandleWidthDate
       );
       let shownDates = newShownData.map((x) => x.date);
 
@@ -113,6 +141,9 @@ function dataReducer(state: DataContextType, action: DataActionType) {
         ...tpPrices,
       ]);
 
+      let [newCandleWidthDate, newCandleLockerWidthDate] =
+        calculateCandleWidthDate(newShownData);
+
       let newState = { ...state };
       newState.shownData = newShownData;
       newState.minMaxShownDate = {
@@ -123,6 +154,10 @@ function dataReducer(state: DataContextType, action: DataActionType) {
         min: newMinMaxShownPrice[0] as number,
         max: newMinMaxShownPrice[1] as number,
       };
+      newState.shownRange = newShownRange;
+      newState.zoomFactor = newZoomFactor;
+      newState.candleWidthDate = newCandleWidthDate;
+      newState.candleLockerWidthDate = newCandleLockerWidthDate;
       return newState;
     }
     default: {
