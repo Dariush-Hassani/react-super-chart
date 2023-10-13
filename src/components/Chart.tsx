@@ -2,6 +2,8 @@ import React from 'react';
 import { useData, useDataDispatch } from '../context/DataContext';
 import { useEffect } from 'react';
 import { dataNormalizer } from '../helperFunctions';
+import Layout from './Layout';
+import { useConfigData, useConfigDispatch } from '../context/ConfigtDataContext';
 
 const Chart: React.FC<{
   chartData: any;
@@ -9,6 +11,11 @@ const Chart: React.FC<{
 }> = ({ chartData, chartId }) => {
   const data = useData();
   const dispatchData = useDataDispatch();
+
+  const config = useConfigData();
+  const dispatchConfig = useConfigDispatch();
+
+  const randomExtId = Math.random().toString();
 
   useEffect(() => {
     if (chartData) {
@@ -22,10 +29,10 @@ const Chart: React.FC<{
   }, [chartData]);
 
   useEffect(() => {
-    console.log(data);
-  }, [data]);
+    console.log(config);
+  }, [config]);
 
-  return <div>Chart</div>;
+  return <Layout chartId={chartId} randomExtId={randomExtId}></Layout>;
 };
 
 export default Chart;
